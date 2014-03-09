@@ -1,0 +1,98 @@
+<html>
+   <head>
+      <link rel="stylesheet" type="text/css" href="./style.css">
+      <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+      <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
+      <script src="./script.js"></script>
+      <script type="text/javascript">
+         var map;
+         var lines=[]
+         var bounds;
+         var mapOptions;
+         function initialize() {
+            mapOptions = {
+               zoom: 3,
+               center: new google.maps.LatLng(0, -180),
+            };
+            map = new google.maps.Map(document.getElementById('map'),mapOptions);
+         }
+
+         function loadMap( segments ) {
+            wipeMap();
+            for( seg in segments ) {
+               segment = segments[seg];
+               var latLn1 = new google.maps.LatLng(segment.lat1,segment.lng1);
+               var latLn2 = new google.maps.LatLng(segment.lat2,segment.lng2);
+               var pl = new google.maps.Polyline({
+                                                   path:[ latLn1, latLn2 ],
+                                                   geodesic:true,
+                                                   strokeColor:getColorForSpeed(segment.speed),
+                                                   strokeOpacity:0.5,
+                                                   strokeWeight:5,
+                                                });
+               bounds.extend( latLn1 );
+               bounds.extend( latLn2 );
+               pl.setMap( map );
+               lines.push( pl );
+            }
+            map.fitBounds(bounds);  
+         }
+
+         function wipeMap() {
+            bounds = new google.maps.LatLngBounds();
+            for( line in lines ) {
+               lines[line].setMap( null );
+            }
+         }
+
+         google.maps.event.addDomListener(window, 'load', initialize);
+
+      </script>
+   </head>
+
+   <body>
+      <div id="content">
+         <ul id="morning-list">
+            <!-- -->
+            <li class="route-item tpl">
+               <div id="route-" class="route row">
+                  <div class="header"> 
+                     <div class="hour"></div>
+                     <div class="title"></div> 
+                  </div>
+                  <div class="col">  
+                     <div class="duration"></div> 
+                     <div class="lbl">Duration</div>
+                  </div>
+                  <div class="col">  
+                     <div class="distance"></div>
+                     <div class="lbl">Distance</div>
+                  </div>
+                  <div class="col"> 
+                     <div class="top-speed"></div>
+                     <div class="lbl">Top Speed</div>
+                     <div class="avg-speed"></div>
+                     <div class="lbl">Avg Speed</div>
+                  </div>
+                  <div class="col">
+                     <div class="active-time"></div>
+                     <div class="lbl">Moving</div>
+                     <div class="inactive-time"></div>
+                     <div class="lbl">Stopped</div>
+                  </div>
+               </div>
+            </li>
+            <!-- -->
+         </ul>
+
+         <ul id="afternoon-list"></ul>
+
+      </div>
+
+
+      <div id="map-wrapper">
+         <div id="map"></div>
+      </div>
+   </body>
+
+</html>
